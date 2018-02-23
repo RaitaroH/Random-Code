@@ -1,0 +1,47 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=image/*;
+Actions=2x;2x_noise1;2x_noise2;2x_noise3;2x_photo;2x_noise1_photo;2x_noise2_photo;2x_noise3_photo
+X-KDE-Submenu=waifu2x
+Icon=zoom-in
+
+[Desktop Action 2x]
+Name=2x
+Icon=zoom-in
+Exec=waifu2xAndNoise 0 %u
+
+[Desktop Action 2x_noise1]
+Name=2x and noise reduction 1
+Icon=labplot-1x-zoom
+Exec=waifu2xAndNoise 1 %u
+
+[Desktop Action 2x_noise2]
+Name=2x  and noise reduction 2
+Icon=labplot-2x-zoom
+Exec=waifu2xAndNoise 2 %u
+
+[Desktop Action 2x_noise3]
+Name=2x  and noise reduction 3
+Icon=labplot-3x-zoom
+Exec=waifu2xAndNoise 3 %u
+
+[Desktop Action 2x_photo]
+Name=2x for photos
+Icon=zoom-in
+Exec=waifu2xPhotoAndNoise 0 %u
+
+[Desktop Action 2x_noise1_photo]
+Name=2x and noise reduction 1 for photos
+Icon=labplot-1x-zoom
+Exec=waifu2xPhotoAndNoise 1 %u
+
+[Desktop Action 2x_noise2_photo]
+Name=2x  and noise reduction 2 for photos
+Icon=labplot-2x-zoom
+Exec=waifu2xPhotoAndNoise 2 %u
+
+[Desktop Action 2x_noise3_photo]
+Name=2x  and noise reduction 3 for photos
+Icon=labplot-3x-zoom
+Exec=waifu2xPhotoAndNoise 3 %u

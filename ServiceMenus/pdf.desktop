@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+Icon=application-pdf
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=image/*;
+Actions=thisIcon;
+Encoding=UTF-8
+
+[Desktop Action thisIcon]
+Name=Convert to pdf
+Icon=application-pdf
+Exec=convert %F "all.pdf"

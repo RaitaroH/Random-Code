@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+Icon=image-png
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=image/*;
+Actions=thisIcon;
+Encoding=UTF-8
+
+[Desktop Action thisIcon]
+Name=Convert to png
+Icon=image-png
+Exec=imageToPNG.sh "%f" 
