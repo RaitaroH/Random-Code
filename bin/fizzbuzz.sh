@@ -1,5 +1,5 @@
 #!/bin/bash
-stop=100
+stop=$1
 check(){
 	if [[ $(($1 % $2)) -eq "0" ]];then
 		output+=$3
