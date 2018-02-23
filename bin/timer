@@ -1,0 +1,13 @@
+#!/bin/bash
+# For more info https://superuser.com/questions/611538/is-there-a-way-to-display-a-countdown-or-stopwatch-timer-in-a-terminal#611582
+
+date0=$(( $1 * 60 ));
+date1=$((`date +%s` + $date0)); 
+while [ "$date1" -ge `date +%s` ]; do 
+	echo -ne "$(date -u --date @$(($date1 - `date +%s`)) +%H:%M:%S)\r";
+	sleep 0.1
+done
+
+( speaker-test -t sine -f 1000 )& pid=$! ; sleep 2s ; kill -9 $pid
+
+

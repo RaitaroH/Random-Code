@@ -1,0 +1,6 @@
+#!/bin/bash
+kwriteconfig5 --file ~/.config/kwinrulesrc --group 2 \
+--key opacityactive "$1" && \
+kwriteconfig5 --file ~/.config/kwinrulesrc --group 2 \
+--key opacityinactive "$2" && \
+qdbus org.kde.KWin /KWin reconfigure

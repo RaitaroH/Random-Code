@@ -1,0 +1,8 @@
+#!/bin/bash
+
+upSeconds="$(cat /proc/uptime | grep -o '^[0-9]\+')"
+upMins=$((${upSeconds} / 60))
+
+echo "Up for ${upMins} minutes."
+echo "Up for ${upSeconds} seconds."
+

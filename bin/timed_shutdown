@@ -1,0 +1,6 @@
+#!/bin/bash
+time=$1
+echo "Waithing $time seconds before shuting down!"
+sleep $time
+echo "Shuting down NOW!"
+shutdown -Ph now

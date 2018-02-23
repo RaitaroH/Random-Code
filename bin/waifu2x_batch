@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source .bashrc
+
+noise=$1
+dirin=$2
+dirout=$3
+
+find $dirin -name "*.png" -o -name "*.jpg" > ~/Desktop/image_list.txt
+
+waifu2x -m noise_scale -noise_level $noise -l ./image_list.txt -o $dirout/%s_2x2.png
+
+rm ~/Desktop/image_list

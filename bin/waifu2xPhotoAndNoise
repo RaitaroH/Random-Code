@@ -1,0 +1,3 @@
+#!/bin/bash
+source ~/.bashrc
+waifu2x_photo -m noise_scale -noise_level $1 -i $2 -o %s_2x.png > /dev/null 2>&1

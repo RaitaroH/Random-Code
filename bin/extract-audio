@@ -1,0 +1,23 @@
+#!/bin/sh
+#Replace spaces
+find . -depth -name '* *' -execdir bash -c 'for i; do mv "$i" "${i// /_}"; done' _ {} +
+
+for f in *.mp4; do
+	ffmpeg -i $f -q:a 0 -map a $f.mp3
+	rm $f	
+done
+
+for f in *.webm; do
+	ffmpeg -i $f -q:a 0 -map a $f.mp3	
+	rm $f
+done
+
+#Renamings
+rename s/mp4\.// *.mp4.mp3
+rename s/webm\.// *.webm.mp3
+
+#Added for duplicates
+#for f in *.mp4.mp3; do rm $f done
+#for f in *.webm.mp3; do rm $f done
+
+

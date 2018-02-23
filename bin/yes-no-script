@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Would you like to 'x' [Y/n]?"
+read ans
+
+if [ -z "$ans" ] || [ $ans = y -o $ans = Y -o $ans = yes -o $ans = Yes -o $ans = YES ]; then
+      echo "Place the 'yes' action here."
+else
+	
+	if [ $ans = n -o $ans = N -o $ans = no -o $ans = No -o $ans = NO ]; then
+		echo "Place the 'no' action here."
+	else
+		echo "Invalid option. Exiting."
+		exit 1
+	fi
+fi
+
+

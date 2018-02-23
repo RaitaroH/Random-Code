@@ -1,0 +1,23 @@
+#!/bin/bash
+echo 'Runing as root.'
+echo
+#sleep 1
+sudo bleachbit --clean --preset
+echo
+
+echo 'Runing bleachbit as user'
+echo
+sleep 1
+bleachbit --clean --preset
+
+echo
+echo "Do you want to logout now? [Y/n]?"
+read ans
+
+if [ -z "$ans" ] || [ $ans = y -o $ans = Y -o $ans = yes -o $ans = Yes -o $ans = YES ]
+then
+	echo "Loging out"
+	/usr/bin/gnome-session-quit --no-prompt
+else
+	exit 1
+fi

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+http://bahmanm.com/blogs/command-line-options-how-to-parse-in-bash-using-getopt
+https://unix.stackexchange.com/questions/62950/getopt-getopts-or-manual-parsing-what-to-use-when-i-want-to-support-both-shor
+
+params="$(getopt -o rkcqfnpsbtwhdgl -l random,kill,choose,quick,favorite,next,prev,begin,stop,timer,switch-arrays,help,display,greetings,leaving --name "$0" -- "$@")"
+eval set -- "$params"
+
+while true
+do
+	case "$1" in
+	
+	-r|--random)
+		shift
+	;;
+	
+
+-k|--kill)
+-c|--choose)
+-q|--quick)
+-f|--favorite)
+-n|--next)
+-p|--prev)
+-s|--stop)
+-b|--begin)
+-t|--timer)
+-w|--switch-arrays)
+-h|--help)
+-d|--display)
+-g|--greetings)
+-l|--leaving)
+
+
+	--)
+		shift
+		break
+	;;
+	
+	*)
+		echo "Not implemented: $1" >&2
+		exit 1
+	;;
+esac
+done
