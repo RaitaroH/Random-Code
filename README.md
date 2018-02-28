@@ -113,10 +113,8 @@ count=5
 # Bind meta to krunner
 ```
 # Make meta invoke krunner
-# Add    Meta=org.kde.krunner,/App,,display   to [ModifierOnlyShortcuts]
-killall kwin_x11
-nano ~/.config/kwinrc
-kwin_x11 --replace
+kwriteconfig5 --file ~/.config/kwinrc --group ModifierOnlyShortcuts --key Meta "org.kde.krunner,/App,,display"
+qdbus org.kde.KWin /KWin reconfigure
 ```
 
 # Installing shit
