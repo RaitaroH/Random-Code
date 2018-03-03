@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=image/*;
+Actions=openAsLayers
+Icon=image-x-xcf
+
+[Desktop Action openAsLayers]
+Name=Open as layers with gimp
+Icon=image-x-xcf
+Exec=convert %F ".all.tif" && gimp .all.tif && rm .all.tif
+
