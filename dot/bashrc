@@ -1,0 +1,112 @@
+# locale
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+
+
+# set -o vi
+export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
+
+# For waifu2x
+export TORCH_ROOT=~/torch
+
+WAIFU2X_DIR=~/waifu2x
+waifu2x()
+{
+    th ${WAIFU2X_DIR}/waifu2x.lua -model_dir ${WAIFU2X_DIR}/models/anime_style_art_rgb $@
+}
+waifu2x_photo()
+{
+    th ${WAIFU2X_DIR}/waifu2x.lua -model_dir ${WAIFU2X_DIR}/models/photo $@
+}
+
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent > ~/.ssh-agent-thing
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+    eval "$(<~/.ssh-agent-thing)"
+fi
+
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+if [ "$PS1" ]; then
+  if [ "$BASH" ] && [ "$BASH" != "/bin/sh" ]; then
+    # The file bash.bashrc already sets the default PS1.
+    # PS1='\h:\w\$ '
+    if [ -f /etc/bash.bashrc ]; then
+      . /etc/bash.bashrc
+    fi
+  else
+    if [ "`id -u`" -eq 0 ]; then
+      PS1='# '
+    else
+      PS1='$ '
+    fi
+  fi
+fi
+
+# The default umask is now handled by pam_umask.
+# See pam_umask(8) and /etc/login.defs.
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi
+
+# Bash insulter/cute
+if [ -f /etc/bash.command-not-found ]; then
+    . /etc/bash.command-not-found
+fi
+
+export GTK_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+ibus-daemon -drx
+
+PS1='\[\033[01;34m\]\u\[\033[01;34m\]@\[\033[01;34m\]\h \[\033[01;36m\]\w \[\033[01;34m\]\$\[\033[00m\] '
+#PS1='${debian_chroot:+($debian_chroot)}\[\e[1m\]\u@\h \e[36m\w \e[34m\$\[\033[00m\] '
+#PS1='\033[01;34m\u\[\033[01;34m\]@\[\033[01;34m\]\h \[\033[01;34m\]\w \[\033[01;34m\]\$\[\033[00m\] '
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]\u\[\033[01;34m\]@\[\033[01;34m\]\h \[\033[01;34m\]\w \[\033[01;34m\]\$\[\033[00m\] '
+
+alias dmenu='dmenu -fn hack-16 -nb "#232629" -nf "#eff0f1" -sb "#31363b" -sf "#3daee9"'
+alias install="sudo apt-get install"
+alias remove="sudo apt-get remove"
+alias fremove="sudo apt-get purge --auto-remove"
+alias update="sudo apt-get upgrade -y && sudo apt-get update && sudo apt-get dist-upgrade"
+alias qupdate="sudo apt-get upgrade -y"
+alias fupdate="sudo apt-get dist-upgrade"
+alias clean="sudo apt-get autoclean && sudo apt-get autoremove"
+alias cute="sudo wget -O /etc/bash.command-not-found https://raw.githubusercontent.com/RaitaroH/bash-anime-girl/master/src/bash.command-not-found"
+alias tvdisable="sudo teamviewer --daemon disable"
+alias tvenable="sudo teamviewer --daemon enable"
+alias cmatrix="cmatrix -a -C cyan"
+alias ll="ls -l"
+alias la="ls -a"
+alias mu="WallpaperSwicher --most-used"
+alias mn="WallpaperSwicher -n"
+alias mp="WallpaperSwicher -p"
+alias grep="grep --color=auto"
+alias skwrite="SUDO_EDITOR=kwrite sudoedit"
+alias ksudo="kdesudo"
+alias pdf="convert *.jpeg"
+alias pdfp="convert *.png"
+alias v="vim"
+
+# More configs at ~/.config/youtube-dl/config
+alias ymp3="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0"
+alias yost_numbering="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/%(autonumber)s_%(title)s.%(ext)s'"
+alias yost="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/%(title)s.%(ext)s'"
+alias ydl="youtube-dl"
+alias yamv="youtube-dl -o '/media/raitaro/HDD/Muzica/Anime/AMV/%(title)s.%(ext)s'"
+
+# Moving around
+alias amv="cd /media/raitaro/HDD/Muzica/Anime/AMV/"
+alias ost="cd /media/raitaro/HDD/Muzica/Anime/OST/"
+
+
+. /home/raitaro/torch/install/bin/torch-activate

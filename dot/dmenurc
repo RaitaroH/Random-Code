@@ -1,0 +1,2 @@
+DMENU='dmenu -i -fn hack-16 -nb #232629 -nf #eff0f1 -sb #31363b -sf #3daee9'
+DMENU_RUN='dmenu_run -i -fn hack-16 -nb #232629 -nf #eff0f1 -sb #31363b -sf #3daee9'
