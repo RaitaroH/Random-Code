@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+Icon=application-pdf
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=all/allfiles;
+Actions=thisIcon;
+Encoding=UTF-8
+
+[Desktop Action thisIcon]
+Name=Convert to pdf with pandoc
+Icon=application-pdf
+Exec=pandoc %f -o %f.pdf

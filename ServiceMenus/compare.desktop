@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=text/plain;
+Actions=compare;
+
+[Desktop Action compare]
+Name=Compare files in vim
+Icon=/home/raitaro/IconsThemes/la-capitaine-dark/apps/scalable/vim.svg
+Exec=konsole -e "vim -d %U"

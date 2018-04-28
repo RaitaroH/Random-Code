@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+Icon=application-pdf
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=inode/directory;
+Actions=thisFolder;
+Encoding=UTF-8
+
+[Desktop Action thisFolder]
+Name=Make folder contents into a pdf and remove folder
+Icon=application-pdf
+Exec=folderContentsPdf "%f"
