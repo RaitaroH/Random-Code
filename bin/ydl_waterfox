@@ -1,0 +1,33 @@
+#!/bin/bash
+link=$(xclip -selection clipboard -o)
+
+params="$(getopt -o sva -l stream,video,audio,amv,ost --name "$0" -- "$@")"
+eval set -- "$params"
+
+while true
+do
+	case "$1" in
+	-s|--stream)
+		echo "Playing $link in vlc"
+		konsole --new-tab -e "vlc $(youtube-dl -g $link) &> /dev/null"
+		exit 1
+	;;
+
+	-v|--video)
+		konsole --new-tab -e "youtube-dl $link"
+		exit 1
+	;;
+	-a|--audio)
+		konsole --new-tab -e "youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 $link"
+		exit 1
+	;;
+	--amv)
+		konsole --new-tab -e "youtube-dl -o '/media/raitaro/HDD/Muzica/Anime/AMV/%(title)s.%(ext)s' $link"
+		exit 1
+	;;
+	--ost)
+		konsole --new-tab -e "youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/%(playlist)s/%(title)s.%(ext)s' --download-archive '/media/raitaro/HDD/Muzica/Anime/OST/%(playlist)s/archive.txt' $link"
+		exit 1
+	;;
+esac
+done

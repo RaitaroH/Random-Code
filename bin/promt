@@ -1,0 +1,19 @@
+#!/bin/sh
+# A dmenu binary promt script
+# Example:
+# ./promt "Wanna shutdown?" "shutdown -Ph now"
+
+if [ -f $HOME/.dmenurc ]; then
+  . $HOME/.dmenurc
+else
+  DMENU='dmenu -i'
+fi
+
+choices="No\nYes"
+chosen=$(echo "$choices" | $DMENU -p "$1")
+
+case "$chosen" in
+	No) ;;
+	Yes) $2 ;;
+esac
+

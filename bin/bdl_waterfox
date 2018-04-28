@@ -1,0 +1,20 @@
+#!/bin/bash
+link=$(xclip -selection clipboard -o)
+
+params="$(getopt -o ar -l anime,retro --name "$0" -- "$@")"
+eval set -- "$params"
+
+while true
+do
+	case "$1" in
+
+	-a|--anime)
+		konsole --new-tab -e "bandcamp-dl --base-dir /media/raitaro/HDD/Muzica/Anime/OST/!Anime/ $link"
+		exit 1
+	;;
+	-r|--retro)
+		konsole --new-tab -e "bandcamp-dl --base-dir /media/raitaro/HDD/Muzica/Anime/OST/!Anime/Retro/ $link"
+		exit 1
+	;;
+esac
+done

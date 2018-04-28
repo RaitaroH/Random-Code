@@ -1,0 +1,31 @@
+#!/bin/sh
+sudo apt-get update
+sudo apt-get install -y cuda-8.0
+
+echo "Making links"
+sudo ln -fs /usr/bin/gcc-4.9 /usr/local/cuda/bin/gcc
+sudo ln -fs /usr/bin/g++-4.9 /usr/local/cuda/bin/g++
+sudo ln -fs /usr/bin/gcc-4.9 /usr//bin/gcc
+sudo ln -fs /usr/bin/g++-4.9 /usr/bin/g++
+
+echo "Git pulling"
+cd ~/github/
+git clone --depth 1 https://github.com/nagadomi/waifu2x.git
+git clone https://github.com/torch/distro.git ~/github/torch --recursive
+cd ~/github/torch
+bash install-deps
+./install.sh
+
+echo "Install the luarocks stuff"
+luarocks install graphicsmagick
+luarocks install lua-csnappy
+luarocks install md5
+luarocks install uuid
+luarocks install csvigo
+
+echo "Setting up waifu2x"
+cd ~/github/waifu2x
+th waifu2x.lua
+
+echo "All done."
+

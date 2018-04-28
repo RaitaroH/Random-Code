@@ -1,0 +1,23 @@
+#!/bin/sh
+if [ $# -lt 2 ]; then
+    echo -e "Download all files with specific extension on a webpage"
+    echo -e "\nUsage: $0 <file_extension> <url>"
+    echo -e "\nExample:\n$0 mp4 http://example.com/files/"
+    echo -e "$0 mp3,ogg,wma http://samples.com/files/"
+    echo -e "\nGoogle: http://lmgtfy.com/?q=intitle%3Aindex.of+mp3+-html+-htm+-php+-asp+-txt+-pls+madonna"
+    return 1
+  fi
+
+  outputdir_name=$(echo "$2" | rev | cut -d\/ -f2 | rev)
+  mkdir -pv "$outputdir_name"
+  cd "$outputdir_name" && wget -r -l1 -H -t1 -nd -N -np -A "$1" -erobots=off "$2"
+
+# Options meaning:
+  # -r,  --recursive                 specify recursive download
+  # -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite)
+  # -H,  --span-hosts                go to foreign hosts when recursive
+  # -t,  --tries=NUMBER              set number of retries to NUMBER (0 unlimits)
+  # -nd, --no-directories            don't create directories
+  # -N,  --timestamping              don't re-retrieve files unless newer than local
+  # -A,  --accept=LIST               comma-separated list of accepted extensions
+  # -np, --no-parent                 don't ascend to the parent directory

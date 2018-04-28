@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source .bashrc
+source ~/.bashrc
 
 noise=$1
 dirin=$2

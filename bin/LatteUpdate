@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Ending process
+killall latte-dock
+
+# Updating from github
+cd ~/github/Latte-Dock
+git pull https://github.com/psifidotos/Latte-Dock.git
+
+# Build
+./install.sh
+
+sleep 1s
+echo "Done. Now starting latte."
+latte-dock &

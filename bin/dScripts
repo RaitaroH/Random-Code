@@ -1,0 +1,16 @@
+#!/bin/bash
+
+dir="/home/raitaro/bin/"
+
+if [ -f $HOME/.dmenurc ]; then
+	. $HOME/.dmenurc
+else
+	DMENU='dmenu -i'
+fi
+
+file=$(ls $dir | $DMENU -l 20 -p "What script to open?")
+if [[ $file != "" ]];then
+	konsole -e "vim $dir$file"
+else
+	exit 1
+fi

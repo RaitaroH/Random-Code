@@ -1,0 +1,11 @@
+#!/bin/bash
+dir="$1"
+# for dir in *; do
+	cd "$dir"
+	rm all.pdf > /dev/null 2>&1
+	convert *.jpg "$dir.pdf" > /dev/null 2>&1
+	convert *.png "$dir.pdf" > /dev/null 2>&1
+	mv "$dir.pdf" ..
+	cd ..
+	rm -r "$dir"
+# done
