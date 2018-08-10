@@ -1,0 +1,34 @@
+#!/bin/bash
+
+dir="/media/raitaro/HDD/Muzica/Anime/OST/"
+
+if [ -f $HOME/.dmenurc ]; then
+	. $HOME/.dmenurc
+else
+	DMENU='dmenu -i'
+fi
+
+params="$(getopt -o df -l directory,file --name "$0" -- "$@")"
+eval set -- "$params"
+
+case "$1" in
+    # Open a directory in audacious
+    -d|--directory)
+        file=$(find $dir -type d | $DMENU -l 20 -p "What songs?")
+        if [[ $file != "" ]];then
+                audacious --qt "$file" &
+        else
+                exit 1
+        fi
+    ;;
+
+    # Append a song to vlc playlist. If vlc is not opened it will open it and start playing. Loop all is activated.
+    -f|--file)
+        file=$(find $dir -type f | $DMENU -l 20 -p "What songs?")
+        if [[ $file != "" ]];then
+                vlc --playlist-enqueue --one-instance --loop "$file" &
+        else
+                exit 1
+        fi
+    ;;
+esac

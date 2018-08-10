@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# dir="/home/raitaro/bin/"
+# dir="/home/raitaro/"
+dir="/media/raitaro/"
+
+if [ -f $HOME/.dmenurc ]; then
+	. $HOME/.dmenurc
+else
+	DMENU='dmenu -i'
+fi
+
+# file=$(ls $dir | $DMENU -l 19 -p "What script to open?")
+file=$(find $dir . \( -name .gnupg -o -name github -o -name .cache -o -name IconsThemes -o -name tor-browser_en-US -o -name R -o -name .waterfox -o -name .thumbnails -o -name vmware -o -name Games -o -name virtual -o -name "Michi Biraki" -o -name temp -o -name Unused -o -name ".local" -o -name share -o -name icons -o -name "*.jpg" -o -name "*.png" -o -name "*.gif" \) -prune -o -print | $DMENU -l 20 -p "What to open?")
+if [[ $file != "" ]];then
+	xdg-open "$file"
+else
+	exit 1
+fi

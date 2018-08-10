@@ -1,0 +1,15 @@
+#!/bin/bash
+sudo cd /usr/lib/vmware/modules/source
+sudo tar xvf vmnet.tar
+sudo cd vmnet-only
+sudo make
+sudo cd ..
+sudo tar xvf vmmon.tar
+sudo cd vmmon-only
+sudo make
+sudo cd ..
+sudo mkdir /lib/modules/`uname -r`/misc
+sudo cp vmmon.o /lib/modules/`uname -r`/misc/vmmon.ko
+sudo cp vmnet.o /lib/modules/`uname -r`/misc/vmnet.ko
+sudo depmod -a
+sudo /etc/init.d/vmware restart
