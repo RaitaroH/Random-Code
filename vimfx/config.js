@@ -92,7 +92,7 @@ vimfx.addCommand({
 
     return true;
 });
-vimfx.set('custom.mode.normal.restart', 'ZR')
+vimfx.set('custom.mode.normal.restart', '<c-R>')
 //
 
 //Search for the selected text
