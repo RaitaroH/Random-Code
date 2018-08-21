@@ -1,13 +1,13 @@
 #!/bin/bash
-sudo cd /usr/lib/vmware/modules/source
+cd /usr/lib/vmware/modules/source
 sudo tar xvf vmnet.tar
-sudo cd vmnet-only
+cd vmnet-only
 sudo make
-sudo cd ..
+cd ..
 sudo tar xvf vmmon.tar
-sudo cd vmmon-only
+cd vmmon-only
 sudo make
-sudo cd ..
+cd ..
 sudo mkdir /lib/modules/`uname -r`/misc
 sudo cp vmmon.o /lib/modules/`uname -r`/misc/vmmon.ko
 sudo cp vmnet.o /lib/modules/`uname -r`/misc/vmnet.ko
