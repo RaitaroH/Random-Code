@@ -1,0 +1,404 @@
+" |  _ \ __ _(_) |_ __ _ _ __ ___ | | | (_) | ____ _ _ __ ___ (_)
+" | |_) / _` | | __/ _` | '__/ _ \| |_| | | |/ / _` | '_ ` _ \| |
+" |  _ < (_| | | || (_| | | | (_) |  _  | |   < (_| | | | | | | |
+" |_| \_\__,_|_|\__\__,_|_|  \___/|_| |_|_|_|\_\__,_|_| |_| |_|_|
+"
+
+set nocompatible
+set t_Co=256
+colorscheme archery
+set directory^=$HOME/.vim/tmp//
+set viminfo+=n~/.vim/.viminfo
+
+" Ttile
+" first, enable status line always
+	:set laststatus=2
+
+" now set it up to change the status line based on mode
+	set statusline+=%f
+
+
+" Capslock behaviour
+	" au VimEnter * :silent !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+	" au VimLeave * :silent !$HOME/bin/CapsLockToEnter
+" Tab navigation like Firefox.
+	nnoremap <S-tab> :tabprevious<CR>
+	nnoremap <tab>   :tabnext<CR>
+	nnoremap <t>     :tabnew<CR>
+	" nnoremap H gT
+	" nnoremap L gt
+	nnoremap <C-j> <c-w>j
+	nnoremap <C-k> <c-w>k
+	nnoremap <C-h> <c-w>h
+	nnoremap <C-l> <c-w>l
+
+
+" Some basics:
+	" map W :w<Enter>
+	nnoremap <C-s> :w<Enter>
+	inoremap <C-s> <Esc>:w<Enter>
+	map P o<Esc>p<Esc>
+	map j gj
+	map k gk
+	map <Down> gj
+	map <Up> gk
+	set clipboard=unnamed
+	set clipboard=unnamedplus
+	filetype plugin on
+	filetype plugin indent on
+	syntax on
+	set encoding=utf-8
+	set cursorline
+	set nocompatible
+	set number                 "Show line number
+	set relativenumber         "Show relative numbers for easy commands
+	set autoindent             " Indent according to previous line.
+
+	" Tab sizes
+	set tabstop     =4
+	set shiftwidth  =4
+	" set expandtab            " Use spaces instead of tabs.
+	set noexpandtab            " Use tabs, not spaces
+	" %retab!                  " Retabulate the whole file
+	set softtabstop =4         " Tab key indents by 4 spaces.
+	set shiftround             " >> indents to next multiple of 'shiftwidth'.
+
+		function! Retab()
+			set tabstop=2
+			set shiftwidth=2
+			set noexpandtab
+			:%retab!
+			set tabstop=4
+			set shiftwidth=4
+			:%retab!
+		endfunction
+
+	set backspace   =indent,eol,start  " Make backspace work as you would expect.
+	set hidden                 " Switch between buffers without having to save first.
+	set laststatus  =2         " Always show statusline.
+	set display     =lastline  " Show as much as possible of the last line.
+
+	set showmode               " Show current mode in command-line.
+	set showcmd                " Show already typed keys when more are expected.
+
+	set incsearch              " Highlight while searching with / or ?.
+	set hlsearch               " Keep matches highlighted.
+
+	set wrapscan               " Searches wrap around end-of-file.
+
+	" Indentation guides
+	set list
+	" set listchars=tab:┊\ "Space required here
+	set showbreak=↪\
+	" set listchars=tab:┊\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨,space:␣
+	set listchars=tab:┊\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+
+	noremap <F3> :set invnumber invrelativenumber<CR>
+	inoremap <F3> :set invnumber invrelativenumber<CR>
+
+	:highlight LineNr term=bold cterm=NONE ctermfg=Grey ctermbg=NONE
+	:highlight CursorLineNr term=bold cterm=NONE ctermfg=Blue ctermbg=NONE
+	:hi CursorLine ctermbg=darkgrey
+
+
+" Splits open at the bottom and right, which is non-retarded, unlike vim defaults.
+	set splitbelow
+	set splitright
+
+" Enable autocompletion:
+	set wildmode=longest,list,full
+	set wildmenu
+
+" Spell-check set to F4:
+	map <F4> :setlocal spell! spelllang=ro<CR>
+
+	let s:spell_position = []
+	let s:spell_count = 0
+	let s:spell_word = ""
+
+	function! LoopSpell()
+
+		if s:spell_position != getpos('.') ||
+				\ (s:spell_count > 0 && s:spell_word !~ expand("<cword>"))
+			let s:spell_count = 0
+			let s:spell_position = getpos('.')
+		endif
+
+		if s:spell_count > 0
+			silent execute "normal! u"
+		endif
+
+		let s:current_word = expand("<cword>")
+		if len(s:current_word) <= 0
+			return
+		endif
+
+		let s:spell_suggestions = spellsuggest(expand(s:current_word))
+		if len(s:spell_suggestions) <= 0
+			return
+		endif
+
+		if s:spell_count >= len(s:spell_suggestions)
+			let s:spell_word = s:current_word
+			let s:spell_count = 0
+		else
+			let s:spell_word = s:spell_suggestions[s:spell_count]
+			let s:spell_count += 1
+		endif
+		silent execute "normal! ciw" . s:spell_word
+		let s:spell_position = getpos('.')
+
+	endfunction
+
+	nnoremap <c-m> :call LoopSpell()<CR>
+
+" Enable autocompletion:
+	set wildmode=longest,list,full
+	set wildmenu
+
+" Automatically deletes all tralling whitespace on save.
+	autocmd BufWritePre * %s/\s\+$//e
+	" nnoremap <F5> :StripWhitespace<CR>
+
+"Navigating with guides
+	inoremap zz <Esc>/<++><Enter>"_c4l
+	vnoremap zz <Esc>/<++><Enter>"_c4l
+	map zz <Esc>/<++><Enter>"_c4l
+	inoremap ;gui <++>
+
+" Easier insert from document
+	inoremap <c-v> <c-x><c-l>
+	map <c-c> yy
+	vnoremap <c-c> yy
+	inoremap <c-c> yy
+
+"py
+    autocmd Filetype py map <buffer> <F5> :!clear;python3 %<cr>
+    autocmd Filetype py map  <F5> :!clear;python3 %<cr>
+
+"CSS
+	autocmd BufRead,BufNewFile *.user.css set filetype=css
+	autocmd BufRead,BufNewFile *.styl set filetype=css
+	autocmd BufRead,BufNewFile *.user.styl set filetype=css
+
+	autocmd Filetype css inoremap <leader>! <Space>!important;
+	autocmd Filetype css inoremap <leader>{ <Space>{<Enter>}<Enter><++><Esc>2ko
+	autocmd Filetype css set tabstop     =2
+	autocmd Filetype css set shiftwidth  =2
+	autocmd Filetype css set expandtab			  " Use spaces instead of tabs.
+	autocmd FileType css set softtabstop =2		  " Tab key indents by 4 spaces.
+	" autocmd Filetype set noexpandtab			  " Use tabs, not spaces
+
+"MARKDOWN
+	autocmd Filetype markdown,rmd map <leader>w yiWi[<esc>Ea](<esc>pa)
+	autocmd Filetype markdown,rmd inoremap ;, <- c(<++>)<Esc>I
+	autocmd Filetype markdown,rmd inoremap ;n ---<Enter>title: "<++>"<Enter>bibliography:<Space>/home/raitaro/Documents/LaTeX/energ.bib<Enter>csl:<Space>/home/raitaro/Documents/LaTeX/bit-numerical-mathematics.csl<Enter>output:<Enter><Space><Space>pdf_document:<Enter><Space><Space>fig_caption: yes<Enter>number_sections: yes<Enter><esc>I---<Enter>\renewcommand{\figurename}{Fig.}<Enter>\renewcommand\contentsname{Cuprins}<Enter>\renewcommand{\tablename}{Tabel}<Enter>
+	autocmd Filetype markdown,rmd inoremap ;b ****<Space><Esc>F*hi
+	autocmd Filetype markdown,rmd inoremap ;s ~~~~<Space><Esc>F~hi
+	autocmd Filetype markdown,rmd inoremap ;e **<Esc>F*i
+	autocmd Filetype markdown,rmd inoremap ;h ====<Space><Esc>F=hi
+	autocmd Filetype markdown,rmd inoremap ;i ![](<++>){height=350px}<++><Esc>F[a
+	autocmd Filetype markdown,rmd inoremap ;f \begin{figure}[!ht]<Enter>\begin{center}<Enter>\includegraphics{}<Enter>\caption{<++>}<Enter>\label{<++>}<Enter>\end{center}<Enter>\end{figure}<++><Esc>4k$i
+	autocmd Filetype markdown,rmd inoremap ;fl \begin{landscape}<Enter>\begin{figure}[!ht]<Enter>\begin{center}<Enter>\includegraphics{}<Enter>\caption{<++>}<Enter>\label{<++>}<Enter>\end{center}<Enter>\end{figure}<Enter>\end{landscape}<Enter<<++><Esc>6k$i
+	autocmd Filetype markdown,rmd inoremap ;ff \begin{figure}[!ht]<Enter>\begin{center}<Enter>\includegraphics[height=250px,keepaspectratio]{}\hfill<Space>\includegraphics[height=250px,keepaspectratio]{<++>}<Enter>\caption{<++>}<Enter>\label{<++>}<Enter>\end{center}<Enter>\end{figure}<++><Esc>4k0f{li
+	autocmd Filetype markdown,rmd inoremap ;l [](<++>)<Esc>F[a
+	autocmd Filetype markdown,rmd inoremap ;1 #<Space><Enter><Esc>kA
+	autocmd Filetype markdown,rmd inoremap ;2 ##<Space><Enter><Esc>kA
+	autocmd Filetype markdown,rmd inoremap ;3 ###<Space><Enter><Esc>kA
+	autocmd Filetype markdown,rmd inoremap ;a --------<Enter>
+	autocmd Filetype markdown,rmd inoremap ;eq \begin{equation}<Enter><Enter>(\#eq:<++>)<Enter>\end{equation}<Enter><++><esc>3ki
+	autocmd Filetype markdown,rmd inoremap ;ref \@ref(eq:)<esc>i
+	autocmd Filetype rmd inoremap ;r <esc>0y$A<Space><-<Space>round(<esc>pA,3)<esc>o
+	autocmd Filetype rmd inoremap ;R ```{r, echo=FALSE}<Enter><Enter>```<esc>kI
+	autocmd Filetype rmd inoremap ;L ```{r, echo=FALSE}<Enter>library(knitr)<enter>library(kableExtra)<enter>options(knitr.table.format = "latex")<Enter>```<esc>o
+	autocmd Filetype rmd inoremap ;T ```{r, results='asis',echo=FALSE}<Enter><Enter>kable(<++>, caption = "<++>", booktabs = T) %>%<Enter><Space><Space>kable_styling(latex_options = c("striped", "hold_position" , "repeat_header"))<Enter>```<Enter><++><esc>4k0i
+	autocmd Filetype rmd inoremap ;t ```{r, results='asis',echo=FALSE}<Enter><Enter>kable(<++>, caption = "<++>")<Enter>```<Enter><++><esc>3k0i
+	autocmd Filetype rmd inoremap ;p ```{r echo=FALSE , fig.cap=""}<Enter><Enter>plot(<++>, ylab="<++>", xlab="<++>")<Enter>abline(lm(<++> ~ <++>))<Enter>abline(v=(seq(0,<++>,by=<++>)), col="lightgray", lty="dotted")<Enter>abline(h=(seq(0,<++>,by=<++>)), col="lightgray", lty="dotted")<Enter>```<Enter><++><esc>6k$hi
+
+	autocmd Filetype markdown map <F5> :!pandoc<space><C-r>%<space>-o<space><C-r>%.pdf<Enter><Enter>
+	autocmd Filetype rmd map <F5> :!echo<space>"require(rmarkdown);<space>render('<c-r>%')"<space>\|<space>R<space>--vanilla<enter>
+"Open the pdf generated
+	autocmd Filetype rmd,rmarkdown nnoremap <buffer> <F2> :!okular %:r.pdf<cr><Enter>
+
+""".bib
+	autocmd FileType bib inoremap ;a @article{<Enter>author<Space>=<Space>"<++>",<Enter>year<Space>=<Space>"<++>",<Enter>title<Space>=<Space>"<++>",<Enter>journal<Space>=<Space>"<++>",<Enter>volume<Space>=<Space>"<++>",<Enter>pages<Space>=<Space>"<++>",<Enter>}<Enter><++><Esc>8kA,<Esc>i
+	autocmd FileType bib inoremap ;b @book{<Enter>author<Space>=<Space>"<++>",<Enter>year<Space>=<Space>"<++>",<Enter>title<Space>=<Space>"<++>",<Enter>publisher<Space>=<Space>"<++>",<Enter>}<Enter><++><Esc>6kA,<Esc>i
+	autocmd FileType bib inoremap ;c @incollection{<Enter>author<Space>=<Space>"<++>",<Enter>title<Space>=<Space>"<++>",<Enter>booktitle<Space>=<Space>"<++>",<Enter>editor<Space>=<Space>"<++>",<Enter>year<Space>=<Space>"<++>",<Enter>publisher<Space>=<Space>"<++>",<Enter>}<Enter><++><Esc>8kA,<Esc>i
+
+	autocmd FileType tx inoremap ;bf \textbf{}<++><Esc>T{i
+
+" Open my bibliography file in split
+	map <F10> :tabnew<space>~/Documents/LaTeX/energ.bib<CR>
+
+" vimrc
+	map <F6> :source ~/.vimrc
+	map <F7> :tabnew<space>~/.vimrc<CR>
+
+" zshrc
+	map <F8> :tabnew<space>~/.zshrc<CR>
+
+" Plugins will be downloaded under the specified directory.
+  " execute pathogen#infect()
+	call plug#begin('~/.vim/plugged')
+
+" Declare the list of plugins.
+	Plug 'scrooloose/nerdcommenter'
+	Plug 'ntpeters/vim-better-whitespace'
+	Plug 'Badacadabra/vim-archery'
+  Plug 'vim-airline/vim-airline'
+	" Plugin outside ~/.vim/plugged with post-update hook
+	Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+	" Plug 'iamcco/mathjax-support-for-mkdp'
+	" Plug 'iamcco/markdown-preview.vim'
+" List ends here. Plugins become visible to Vim after this call.
+	call plug#end()
+	filetype indent on
+	let mapleader=" "
+	" set timeout timeoutlen=1500
+
+" Markdown preview stuff
+	" let g:mkdp_browserfunc = 'MKDP_browserfunc_default'
+	" " callback vim function to open browser, the only param is the url to open
+	" let g:mkdp_auto_start = 0
+	" " set to 1, the vim will open the preview window once enter the markdown
+	" " buffer
+	" let g:mkdp_auto_open = 0
+	" " set to 1, the vim will auto open preview window when you edit the
+	" " markdown file
+	" let g:mkdp_auto_close = 1
+	" " set to 1, the vim will auto close current preview window when change
+	" " from markdown buffer to another buffer
+	" let g:mkdp_refresh_slow = 0
+	" " set to 1, the vim will just refresh markdown when save the buffer or
+	" " leave from insert mode, default 0 is auto refresh markdown as you edit or
+	" " move the cursor
+	" let g:mkdp_command_for_global = 0
+	" " set to 1, the MarkdownPreview command can be use for all files,
+	" " by default it just can be use in markdown file
+	" let g:mkdp_open_to_the_world = 0
+	" " set to 1, preview server available to others in your network
+	" " by default, the server only listens on localhost (127.0.0.1)
+	" nmap <silent> <F8> <Plug>MarkdownPreview
+	" imap <silent> <F8> <Plug>MarkdownPreview
+	" nmap <silent> <F9> <Plug>StopMarkdownPreview
+	" imap <silent> <F9> <Plug>StopMarkdownPreview
+" Airline stuff
+	let g:airline_theme = 'archery'
+	let g:airline#extensions#tabline#enabled = 1
+
+" Add spaces after comment delimiters by default
+	let g:NERDSpaceDelims = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+	let g:NERDTrimTrailingWhitespace = 1
+
+" Custom comments
+	let g:NERDCustomDelimiters = {
+	\ 'c': { 'left': '/**','right': '*/' },
+	\ 'rmd': { 'left': '%'} ,
+	\ 'tex': { 'left': '<!--','right': '-->' }
+	\ }
+
+"Allow commenting and inverting empty lines (useful when commenting a region)
+	let g:NERDCommentEmptyLines = 1
+
+" Strip the newline from the end of a string
+function! Chomp(str)
+	return substitute(a:str, '\n$', '', '')
+endfunction
+
+" Find a file and pass it to cmd
+function! DmenuOpen(cmd)
+	let fname = Chomp(system('find . -path ./.gnupg -prune -o -print | dmenu -i -fn hack-16 -nb "#232629" -nf "#eff0f1" -sb "#31363b" -sf "#3daee9" -l 20 -p ' . a:cmd))
+
+	if empty(fname)
+		return
+	endif
+	execute a:cmd . " " . fname
+endfunction
+
+map <c-t> :call DmenuOpen(":tabnew")<cr>
+map <c-e> :call DmenuOpen("e")<cr>
+map <c-f> :call DmenuOpen(":vsp")<cr>
+
+"Note: This option must be set in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+	\ 'default' : $HOME.'/.vim/.vimshell_hist',
+	\ 'vimshell' : $HOME.'/.vimshell_hist',
+	\ 'scheme' : $HOME.'/.gosh_completions'
+		\ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+	let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings for autocompletion
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+	" For no inserting <CR> key.
+	"return pumvisible() ? "\<C-y>" : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+
+" Shell like behavior(not recommended).
+"set completeopt+=longest
+"let g:neocomplete#enable_auto_select = 1
+"let g:neocomplete#disable_auto_complete = 1
+"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+	let g:neocomplete#sources#omni#input_patterns = {}
+endif
+"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+" For perlomni.vim setting.
+" https://github.com/c9s/perlomni.vim
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+" Toggle DeadKeys set (for accent marks):
+	so ~/.vim/plugin/deadkeys.vim
+	nm <leader>dd :call ToggleDeadKeys()<CR>
+	imap <leader>dd <esc>:call ToggleDeadKeys()<CR>a
+
+" Source my IPA shorcuts:
+	so ~/.vim/plugin/ipa.vim
+	nm <leader>ii :call ToggleIPA()<CR>
+		imap <leader>ii <esc>:call ToggleIPA()<CR>a
+
