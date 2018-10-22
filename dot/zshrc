@@ -1,48 +1,255 @@
+# /$$$$$$$$           /$$              /$$$$$$                       /$$$$$$  /$$
+# |_____ $$           | $$             /$$__  $$                     /$$__  $$|__/
+#      /$$/   /$$$$$$$| $$$$$$$       | $$  \__/  /$$$$$$  /$$$$$$$ | $$  \__/ /$$  /$$$$$$
+#     /$$/   /$$_____/| $$__  $$      | $$       /$$__  $$| $$__  $$| $$$$    | $$ /$$__  $$
+#    /$$/   |  $$$$$$ | $$  \ $$      | $$      | $$  \ $$| $$  \ $$| $$_/    | $$| $$  \ $$
+#   /$$/     \____  $$| $$  | $$      | $$    $$| $$  | $$| $$  | $$| $$      | $$| $$  | $$
+#  /$$$$$$$$ /$$$$$$$/| $$  | $$      |  $$$$$$/|  $$$$$$/| $$  | $$| $$      | $$|  $$$$$$$
+# |________/|_______/ |__/  |__/       \______/  \______/ |__/  |__/|__/      |__/ \____  $$
+#                                                                                  /$$  \ $$
+#                                                                                 |  $$$$$$/
+#                                                                                  \______/
+
+# Export {{{
+
+ZSH_DISABLE_COMPFIX=true
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/raitaro/.oh-my-zsh
+export ZSH=/home/raitaro/.oh-my-zsh
 
+# locale
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+# Map Ctrl-S to sth usefull other than XOFF (interrupt data flow).
+stty -ixon
+
+# set -o vi
+export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
+
+# For waifu2x
+export TORCH_ROOT=~/github/torch
+
+WAIFU2X_DIR=~/github/waifu2x
+waifu2x()
+{
+    th ${WAIFU2X_DIR}/waifu2x.lua -model_dir ${WAIFU2X_DIR}/models/anime_style_art_rgb $@
+}
+waifu2x_photo()
+{
+    th ${WAIFU2X_DIR}/waifu2x.lua -model_dir ${WAIFU2X_DIR}/models/photo $@
+}
+
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent > ~/.ssh-agent-thing
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+    eval "$(<~/.ssh-agent-thing)"
+fi
+
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+if [ "$PS1" ]; then
+  if [ "$BASH" ] && [ "$BASH" != "/bin/sh" ]; then
+    # The file bash.bashrc already sets the default PS1.
+    # PS1='\h:\w\$ '
+    if [ -f /etc/bash.bashrc ]; then
+      . /etc/bash.bashrc
+    fi
+  else
+    if [ "`id -u`" -eq 0 ]; then
+      PS1='# '
+    else
+      PS1='$ '
+    fi
+  fi
+fi
+
+# The default umask is now handled by pam_umask.
+# See pam_umask(8) and /etc/login.defs.
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi
+
+# Bash insulter/cute
+if [ -f /etc/bash.command-not-found ]; then
+    . /etc/bash.command-not-found
+fi
+
+export GTK_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+ibus-daemon -drx
+
+# }}}
+
+# Old PS {{{
+	# PS1='\[\033[01;34m\]\u\[\033[01;34m\] ♥ \[\033[01;34m\]\h \[\033[01;36m\]\w \[\033[01;34m\]\n > \[\033[00m\]'
+	#PS1='${debian_chroot:+($debian_chroot)}\[\e[1m\]\u@\h \e[36m\w \e[34m\$\[\033[00m\] '
+	#PS1='\033[01;34m\u\[\033[01;34m\]@\[\033[01;34m\]\h \[\033[01;34m\]\w \[\033[01;34m\]\$\[\033[00m\] '
+	#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]\u\[\033[01;34m\]@\[\033[01;34m\]\h \[\033[01;34m\]\w \[\033[01;34m\]\$\[\033[00m\] '
+# }}}
+
+# Logs {{{
+# Creating log files
+
+if [ ! -d ~/.log ];then
+    mkdir ~/.log
+    if [ ! -f ~/.log/install.log ];then touch ~/.log/install.log; fi
+    if [ ! -f ~/.log/remove.log ];then touch ~/.log/remove.log; fi
+    if [ ! -f ~/.log/update.log ];then touch ~/.log/update.log; fi
+fi
+
+# Logging functions
+install() {
+    sudo apt-get install $@ 2>&1 | tee -a ~/.log/install.log
+    date >> ~/.log/install.log
+}
+alias log_install="tail ~/.log/install.log"
+
+remove() {
+    sudo apt-get remove $@ 2>&1 | tee -a ~/.log/remove.log
+    date >> ~/.log/remove.log
+}
+alias log_remove="tail ~/.log/remove.log"
+
+fremove() {
+    sudo apt-get purge --auto-remove $@ 2>&1 | tee -a ~/.log/remove.log
+    date >> ~/.log/remove.log
+}
+alias log_remove="tail ~/.log/remove.log"
+
+update() {
+    sudo apt-get upgrade -y 2>&1 | tee -a ~/.log/update.log
+    sudo apt-get update 2>&1 | tee -a ~/.log/update.log
+    date >> ~/.log/update.log
+}
+fupdate() {
+    sudo apt-get dist-upgrade -y 2>&1 | tee -a ~/.log/update.log
+    date >> ~/.log/update.log
+}
+alias log_update="tail ~/.log/update.log"
+
+clean() {
+    sudo apt-get autoclean && sudo apt-get autoremove 2>&1 | tee -a ~/.log/remove.log
+    date >> ~/.log/remove.log
+}
+alias log_remove="tail ~/.log/remove.log"
+# }}}
+
+# Aiases {{{
+# Other stuff
+alias d.="2>/dev/null 1>&2 dolphin . &"
+alias wego="curl wttr.in"
+alias dmenu='dmenu -fn hack-16 -nb "#232629" -nf "#eff0f1" -sb "#31363b" -sf "#3daee9"'
+alias audacious="audacious --qt"
+alias qupdate="sudo apt-get upgrade -y"
+alias cute="sudo wget -O /etc/bash.command-not-found https://raw.githubusercontent.com/RaitaroH/bash-anime-girl/master/src/bash.command-not-found"
+alias tvdisable="sudo teamviewer --daemon disable"
+alias tvenable="sudo teamviewer --daemon enable"
+alias cmatrix="cmatrix -a -C cyan"
+alias ll="ls -l"
+alias la="ls -a"
+alias mu="WallpaperSwicher --most-used"
+alias mn="WallpaperSwicher -n"
+alias mp="WallpaperSwicher -p"
+alias grep="grep --color=auto"
+alias figlet="figlet -f Big_Money-ne"
+alias skwrite="SUDO_EDITOR=kwrite sudoedit"
+alias ksudo="kdesudo"
+alias pdf="convert *.jpeg"
+alias pdfp="convert *.png"
+alias v="vim"
+alias vbin="cd ~/bin/; vim"
+alias cfgz="vim ~/.zshrc"
+alias cfgb="vim ~/.bashrc"
+alias cfgv="vim ~/.vimrc"
+# alias cfgsv"~/.SpaceVim.d/init.toml"
+# alias cfgq="vim ~/.config/qutebrowser/config.py"
+alias sb="source ~/.bashrc;echo '.bashrc was sourced.'"
+alias sz="source ~/.zshrc;echo '.zhrc was sourced.'"
+alias cx="chmod +x"
+
+# More configs at ~/.config/youtube-dl/config
+alias ymp3="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --embed-thumbnail"
+alias yost="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --embed-thumbnail --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/%(playlist)s/%(title)s.%(ext)s' --download-archive /tmp/archive.txt"
+alias yostretro="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --embed-thumbnail --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/!Anime/Retro/%(uploader)s/%(title)s.%(ext)s' --download-archive /tmp/archive.txt"
+alias ydl="youtube-dl"
+alias yamv="youtube-dl -o '/media/raitaro/HDD/Muzica/Anime/AMV/%(title)s.%(ext)s'"
+# yamv() {
+    # path_sav="/media/raitaro/HDD/Muzica/Anime/AMV/${2}" #where the downloaded file ends
+    # exec="mv {} ${path_sav}; exit 0"
+    # youtube-dl -o '/media/raitaro/HDD/Muzica/Anime/AMV/%(title)s.%(ext)s' "$1" --exec \""$exec"\"
+# }
+alias yplaylist="youtube-dl -o '/media/raitaro/HDD/%(uploader)s/%(title)s.%(ext)s' --download-archive /tmp/archive.txt"
+# bandcamp-dl stuff
+alias bdl="bandcamp-dl --base-dir '/media/raitaro/HDD/Muzica/Anime/OST/!Anime/'"
+alias bdlr="bandcamp-dl --base-dir '/media/raitaro/HDD/Muzica/Anime/OST/!Anime/Retro'"
+# thehylia shit
+alias hylias="python ~/github/thehylia/thehylia.py --search"
+
+# Moving around
+alias amv="cd /media/raitaro/HDD/Muzica/Anime/AMV/"
+alias ost="cd /media/raitaro/HDD/Muzica/Anime/OST/"
+
+# VPN
+alias vpnc="sudo protonvpn-cli --f"
+alias vpnd="sudo protonvpn-cli --disconnect"
+
+shdl() { curl -O $(curl -s http://sci-hub.tw/"$@" | grep location.href | grep -o http.*pdf) ;}
+
+# }}}
+
+# Theming (powerline) {{{
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 # ZSH_THEME="robbyrussell"
 ZSH_THEME="powerlevel9k/powerlevel9k"
 
-# Custom stuff for 9k
 POWERLEVEL9K_MODE="nerdfont-complete"
-
+# POWERLEVEL9K_DISABLE_RPROMPT=true
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="▶ "
 POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 
-# Custom icons
-POWERLEVEL9K_CUSTOM_RAITARO="echo Raitaro +"
-POWERLEVEL9K_CUSTOM_RAITARO_BACKGROUND=010
+POWERLEVEL9K_CUSTOM_RAITARO_ICON="echo Raitaro"
+POWERLEVEL9K_CUSTOM_RAITARO_ICON_BACKGROUND=010
+POWERLEVEL9K_CUSTOM_RAITARO_ICON_FOREGROUND=015
 
-POWERLEVEL9K_CUSTOM_REIKA="echo Reika ="
-POWERLEVEL9K_CUSTOM_REIKA_BACKGROUND=005
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_raitaro_icon dir vcs)
 
-POWERLEVEL9K_CUSTOM_PLUS="echo +"
-POWERLEVEL9K_CUSTOM_PLUS_BACKGROUND=008
+POWERLEVEL9K_BATTERY_LOW_BACKGROUND='red'
+POWERLEVEL9K_BATTERY_CHARGING_BACKGROUND='yellow'
+POWERLEVEL9K_BATTERY_CHARGED_BACKGROUND='green'
+POWERLEVEL9K_BATTERY_DISCONNECTED_BACKGROUND='blue'
+POWERLEVEL9K_BATTERY_LOW_FOREGROUND=015
+POWERLEVEL9K_BATTERY_CHARGING_FOREGROUND=015
+POWERLEVEL9K_BATTERY_CHARGED_FOREGROUND=015
+POWERLEVEL9K_BATTERY_DISCONNECTED_FOREGROUND=015
 
-POWERLEVEL9K_CUSTOM_EQ="echo ="
-POWERLEVEL9K_CUSTOM_EQ_BACKGROUND=008
+POWERLEVEL9K_STATUS_OK_BACKGROUND=006
+POWERLEVEL9K_STATUS_OK_FOREGROUND=015
+POWERLEVEL9K_STATUS_CROSS_BACKGROUND=196
+POWERLEVEL9K_STATUS_CROSS_FOREGROUND=015
 
-POWERLEVEL9K_CUSTOM_LOVE="echo "
-POWERLEVEL9K_CUSTOM_LOVE_BACKGROUND=009
+POWERLEVEL9K_VI_MODE_INSERT_BACKGROUND=236
+POWERLEVEL9K_VI_MODE_INSERT_FOREGROUND=006
+POWERLEVEL9K_VI_MODE_NORMAL_BACKGROUND=236
+POWERLEVEL9K_VI_MODE_NORMAL_FOREGROUND=004
 
-# Battery
-POWERLEVEL9K_BATTERY_LOW_FOREGROUND='red'
-POWERLEVEL9K_BATTERY_LOW_THRESHOLD='10'
-POWERLEVEL9K_BATTERY_CHARGING_FOREGROUND='blue'
-POWERLEVEL9K_BATTERY_CHARGED_FOREGROUND='green'
-POWERLEVEL9K_BATTERY_DISCONNECTED_FOREGROUND='yellow'
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(vi_mode status root_indicator background_jobs battery history time)
 
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status time battery)
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_raitaro custom_reika custom_love dir vcs)
-
+# Set list of themes to load
 # Setting this variable when ZSH_THEME=random
 # cause zsh load theme from this variable instead of
 # looking in ~/.oh-my-zsh/themes/
@@ -50,7 +257,7 @@ POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_raitaro custom_reika custom_love dir v
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+CASE_SENSITIVE="true"
 
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
@@ -72,12 +279,12 @@ POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_raitaro custom_reika custom_love dir v
 ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
 # much, much faster.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
@@ -93,6 +300,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
+  vi-mode
+  zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -105,11 +314,11 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
-else
-  export EDITOR='mvim'
-fi
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -125,98 +334,93 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+#
+#-------- Color Manpages
+export LESS_TERMCAP_mb=$'\E[01;31m'             # begin blinking
+export LESS_TERMCAP_md=$'\E[01;31m'             # begin bold
+export LESS_TERMCAP_me=$'\E[0m'                 # end mode
+export LESS_TERMCAP_se=$'\E[0m'                 # end standout-mode
+export LESS_TERMCAP_so=$'\E[01;44;33m'          # begin standout-mode - info box
+export LESS_TERMCAP_ue=$'\E[0m'                 # end underline
+export LESS_TERMCAP_us=$'\E[01;32m'             # begin underline
+#export MANPAGER="/usr/bin/most -s" # color using most
+# }}}
 
-############################################################################################################
-# From my bashrc
-############################################################################################################
+# Global Alias {{{
+##------------------------------------------------------
+## Automatically Expanding Global Aliases (Space key to expand)
+## references: http://blog.patshead.com/2012/11/automatically-expaning-zsh-global-aliases---simplified.html
+globalias() {
+	if [[ $LBUFFER =~ '[A-Z0-9]+$' ]]; then
+		zle _expand_alias
+		zle expand-word
+	fi
+	zle self-insert
+	}
+	zle -N globalias
+	bindkey " " globalias                 # space key to expand globalalias
+	# bindkey "^ " magic-space            # control-space to bypass completion
+	bindkey "^[[Z" magic-space            # shift-tab to bypass completion
+	bindkey -M isearch " " magic-space    # normal space during searches
 
-# locale
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
 
+	# http://www.pper.co.uk/zshtips.html
+	alias -g ND='*(/om[1])' 	      # newest directory
+	alias -g NF='*(.om[1])' 	      # newest file
+	alias -g NE='2>|/dev/null'
+	alias -g NO='&>|/dev/null'
+	alias -g P='2>&1 | $PAGER'
+	alias -g VV='| vim -R -'
+	alias -g L='| less'
+	alias -g M='| most'
+	alias -g C='| wc -l'
+	alias -g H='| head'
+	alias -g T='| tail'
+	alias -g G='| grep'
+	alias -g LL="2>&1 | less"
+	alias -g CA="2>&1 | cat -A"
+	alias -g NE="2> /dev/null"
+	alias -g NUL="> /dev/null 2>&1"
+	alias -g GM='LD_PRELOAD=/usr/\$LIB/libgamemodeauto.so'
+	alias -g CX="chmod +x ~/bin/"
+	alias -g XC="| xclip -selection clipboard"
+#}}}
 
-# set -o vi
-export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
-
-# For waifu2x
-export TORCH_ROOT=~/torch
-
-WAIFU2X_DIR=~/waifu2x
-waifu2x()
-{
-    th ${WAIFU2X_DIR}/waifu2x.lua -model_dir ${WAIFU2X_DIR}/models/anime_style_art_rgb $@
+# cheat zsh autocomplete {{{
+_cmpl_cheat() {
+	reply=($(cheat -l | cut -d' ' -f1))
 }
-waifu2x_photo()
-{
-    th ${WAIFU2X_DIR}/waifu2x.lua -model_dir ${WAIFU2X_DIR}/models/photo $@
+compctl -K _cmpl_cheat cheat
+export CEATCOLORS=true
+export EDITOR=vim
+
+_cmpl_wall() {
+	reply=($(WallpaperSwicher -h))
 }
+compctl -K _cmpl_wall WallpaperSwicher
+_cmpl_playm() {
+	reply=($(playm --help))
+}
+compctl -K _cmpl_playm playm
+# }}}
 
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-    ssh-agent > ~/.ssh-agent-thing
-fi
-if [[ "$SSH_AGENT_PID" == "" ]]; then
-    eval "$(<~/.ssh-agent-thing)"
-fi
+# Fzf {{{
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
-# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+# Key bindings
+fzf_killps() { zle -I; ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -${1:-9} ; }; zle -N fzf_killps; bindkey '^Q' fzf_killps
+fzf_cd() { zle -I; DIR=$(find ${1:-*} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf) && cd "$DIR" ; }; zle -N fzf_cd; bindkey '^F' fzf_cd
+bindkey '^ ' forward-char # Bindkey control+v to fill autosuggestions
+bindkey '^V' forward-char # Bindkey control+v to fill autosuggestions
+# }}}
 
-# The default umask is now handled by pam_umask.
-# See pam_umask(8) and /etc/login.defs.
-
-if [ -d /etc/profile.d ]; then
-  for i in /etc/profile.d/*.sh; do
-    if [ -r $i ]; then
-      . $i
-    fi
-  done
-  unset i
-fi
-    
-# Bash insulter/cute
-if [ -f /etc/bash.command-not-found ]; then
-    . /etc/bash.command-not-found
-fi
-
-export GTK_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-export QT_IM_MODULE=ibus
-ibus-daemon -drx
-
-alias install="sudo apt-get install"
-alias remove="sudo apt-get remove"
-alias fremove="sudo apt-get purge --auto-remove"
-alias update="sudo apt-get upgrade -y && sudo apt-get update && sudo apt-get dist-upgrade"
-alias qupdate="sudo apt-get upgrade -y"
-alias fupdate="sudo apt-get dist-upgrade"
-alias clean="sudo apt-get autoclean && sudo apt-get autoremove"
-alias cute="sudo wget -O /etc/bash.command-not-found https://raw.githubusercontent.com/RaitaroH/bash-anime-girl/master/src/bash.command-not-found"
-alias tvdisable="sudo teamviewer --daemon disable"
-alias tvenable="sudo teamviewer --daemon enable"
-alias cmatrix="cmatrix -a -C cyan"
-alias ll="ls -l"
-alias la="ls -a"
-alias mu="WallpaperSwicher --most-used"
-alias mn="WallpaperSwicher -n"
-alias mp="WallpaperSwicher -p"
-alias grep="grep --color=auto"
-alias skwrite="SUDO_EDITOR=kwrite sudoedit"
-alias ksudo="kdesudo"
-alias pdf="convert *.jpeg"
-alias pdfp="convert *.png"
-alias v="vim"
-
-# More configs at ~/.config/youtube-dl/config
-alias ymp3="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0"
-alias yost_numbering="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/%(autonumber)s_%(title)s.%(ext)s'"
-alias yost="youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --yes-playlist -o '/media/raitaro/HDD/Muzica/Anime/OST/%(title)s.%(ext)s'"
-alias ydl="youtube-dl"
-alias yamv="youtube-dl -o '/media/raitaro/HDD/Muzica/Anime/AMV/%(title)s.%(ext)s'"
-
-# Moving around
-alias amv="cd /media/raitaro/HDD/Muzica/Anime/AMV/"
-alias ost="cd /media/raitaro/HDD/Muzica/Anime/OST/"
-
-
-. /home/raitaro/torch/install/bin/torch-activate
+# pywal {{{
+# wal-tile() {
+    # wal -q -n -i "$@"
+    # ~/bin/ksetwallpaper "$(< "${HOME}/.cache/wal/wal")"
+# }
+# Import colorscheme from 'wal' asynchronously
+# &   # Run the process in the background.
+# ( ) # Hide shell job control messages.
+# (cat ~/.cache/wal/sequences &)
+# }}}
