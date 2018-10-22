@@ -1,23 +1,55 @@
-" |  _ \ __ _(_) |_ __ _ _ __ ___ | | | (_) | ____ _ _ __ ___ (_)
-" | |_) / _` | | __/ _` | '__/ _ \| |_| | | |/ / _` | '_ ` _ \| |
-" |  _ < (_| | | || (_| | | | (_) |  _  | |   < (_| | | | | | | |
-" |_| \_\__,_|_|\__\__,_|_|  \___/|_| |_|_|_|\_\__,_|_| |_| |_|_|
 "
+"   /$$    /$$ /$$                      /$$$$$$                       /$$$$$$  /$$
+"  | $$   | $$|__/                     /$$__  $$                     /$$__  $$|__/
+"  | $$   | $$ /$$ /$$$$$$/$$$$       | $$  \__/  /$$$$$$  /$$$$$$$ | $$  \__/ /$$  /$$$$$$
+"  |  $$ / $$/| $$| $$_  $$_  $$      | $$       /$$__  $$| $$__  $$| $$$$    | $$ /$$__  $$
+"   \  $$ $$/ | $$| $$ \ $$ \ $$      | $$      | $$  \ $$| $$  \ $$| $$_/    | $$| $$  \ $$
+"    \  $$$/  | $$| $$ | $$ | $$      | $$    $$| $$  | $$| $$  | $$| $$      | $$| $$  | $$
+"     \  $/   | $$| $$ | $$ | $$      |  $$$$$$/|  $$$$$$/| $$  | $$| $$      | $$|  $$$$$$$
+"      \_/    |__/|__/ |__/ |__/       \______/  \______/ |__/  |__/|__/      |__/ \____  $$
+"                                                                                  /$$  \ $$
+"                                                                                 |  $$$$$$/
+"                                                                                  \______/
 
-set nocompatible
+" Theming {{{
 set t_Co=256
-colorscheme archery
+colorscheme gruvbox
+" colorscheme onedark
+" colorscheme archery
+set background=dark    " Setting dark mode
 set directory^=$HOME/.vim/tmp//
 set viminfo+=n~/.vim/.viminfo
 
 " Ttile
 " first, enable status line always
-	:set laststatus=2
-
+	set laststatus=2
 " now set it up to change the status line based on mode
 	set statusline+=%f
 
+if has("gui_running")
+	if has("gui_gtk2")
+		set guifont=Hack\ Nerd\ Font\ Mono\ 12
+	endif
+endif
 
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX))
+	if (has("nvim"))
+		"For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+		let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+	endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+	if (has("termguicolors"))
+		set termguicolors
+	endif
+endif
+" }}}
+
+" Remaps and set {{{
 " Capslock behaviour
 	" au VimEnter * :silent !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
 	" au VimLeave * :silent !$HOME/bin/CapsLockToEnter
@@ -32,11 +64,13 @@ set viminfo+=n~/.vim/.viminfo
 	nnoremap <C-h> <c-w>h
 	nnoremap <C-l> <c-w>l
 
-
-" Some basics:
+	set nocompatible
 	" map W :w<Enter>
 	nnoremap <C-s> :w<Enter>
 	inoremap <C-s> <Esc>:w<Enter>
+	nnoremap <C-q> ZZ<Enter>
+	" Make Y yank everything from the cursor to the end of the line. This makes Y
+	noremap Y y$
 	map P o<Esc>p<Esc>
 	map j gj
 	map k gk
@@ -52,7 +86,8 @@ set viminfo+=n~/.vim/.viminfo
 	set nocompatible
 	set number                 "Show line number
 	set relativenumber         "Show relative numbers for easy commands
-	set autoindent             " Indent according to previous line.
+	set autoindent             "Indent according to previous line.
+	nnoremap <expr> dd match(getline('.'), '^\s*$') == -1 ? 'dd' : '"_dd' "Make dd not yank empty lines
 
 	" Tab sizes
 	set tabstop     =4
@@ -63,15 +98,15 @@ set viminfo+=n~/.vim/.viminfo
 	set softtabstop =4         " Tab key indents by 4 spaces.
 	set shiftround             " >> indents to next multiple of 'shiftwidth'.
 
-		function! Retab()
-			set tabstop=2
-			set shiftwidth=2
-			set noexpandtab
-			:%retab!
-			set tabstop=4
-			set shiftwidth=4
-			:%retab!
-		endfunction
+	function! Retab()
+		set tabstop=2
+		set shiftwidth=2
+		set noexpandtab
+		:%retab!
+		set tabstop=4
+		set shiftwidth=4
+		:%retab!
+	endfunction
 
 	set backspace   =indent,eol,start  " Make backspace work as you would expect.
 	set hidden                 " Switch between buffers without having to save first.
@@ -96,10 +131,30 @@ set viminfo+=n~/.vim/.viminfo
 	noremap <F3> :set invnumber invrelativenumber<CR>
 	inoremap <F3> :set invnumber invrelativenumber<CR>
 
-	:highlight LineNr term=bold cterm=NONE ctermfg=Grey ctermbg=NONE
-	:highlight CursorLineNr term=bold cterm=NONE ctermfg=Blue ctermbg=NONE
-	:hi CursorLine ctermbg=darkgrey
+	" :highlight LineNr term=bold cterm=NONE ctermfg=Grey ctermbg=NONE
+	" :highlight CursorLineNr term=bold cterm=NONE ctermfg=Blue ctermbg=NONE
+	" :hi CursorLine ctermbg=darkgrey
 
+" Have vim jump to the last position when reopening a file
+	if has("autocmd")
+	au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+		\| exe "normal! g'\"" | endif
+	endif
+
+" Put plugins and dictionaries in this dir (also on Windows)
+	let vimDir = '$HOME/.vim'
+	let &runtimepath.=','.vimDir
+" Keep undo history across sessions by storing it in a file
+	if has('persistent_undo')
+		let myUndoDir = expand(vimDir . '/undodir')
+		" Create dirs
+		call system('mkdir ' . vimDir)
+		call system('mkdir ' . myUndoDir)
+		let &undodir = myUndoDir
+		set undofile
+		set undolevels=1000         " How many undos
+		set undoreload=10000        " number of lines to save for undo
+	endif
 
 " Splits open at the bottom and right, which is non-retarded, unlike vim defaults.
 	set splitbelow
@@ -108,7 +163,7 @@ set viminfo+=n~/.vim/.viminfo
 " Enable autocompletion:
 	set wildmode=longest,list,full
 	set wildmenu
-
+" Spelling {{{
 " Spell-check set to F4:
 	map <F4> :setlocal spell! spelllang=ro<CR>
 
@@ -152,6 +207,8 @@ set viminfo+=n~/.vim/.viminfo
 
 	nnoremap <c-m> :call LoopSpell()<CR>
 
+" }}}
+
 " Enable autocompletion:
 	set wildmode=longest,list,full
 	set wildmenu
@@ -160,18 +217,24 @@ set viminfo+=n~/.vim/.viminfo
 	autocmd BufWritePre * %s/\s\+$//e
 	" nnoremap <F5> :StripWhitespace<CR>
 
-"Navigating with guides
+"Navigating with guides {{{
 	inoremap zz <Esc>/<++><Enter>"_c4l
 	vnoremap zz <Esc>/<++><Enter>"_c4l
 	map zz <Esc>/<++><Enter>"_c4l
 	inoremap ;gui <++>
+" }}}
 
 " Easier insert from document
 	inoremap <c-v> <c-x><c-l>
 	map <c-c> yy
 	vnoremap <c-c> yy
 	inoremap <c-c> yy
+" Marker folding
+	set foldmethod=marker
+	set foldmarker={{{,}}}
+"}}}
 
+" Extension specific macross {{{
 "py
     autocmd Filetype py map <buffer> <F5> :!clear;python3 %<cr>
     autocmd Filetype py map  <F5> :!clear;python3 %<cr>
@@ -180,6 +243,7 @@ set viminfo+=n~/.vim/.viminfo
 	autocmd BufRead,BufNewFile *.user.css set filetype=css
 	autocmd BufRead,BufNewFile *.styl set filetype=css
 	autocmd BufRead,BufNewFile *.user.styl set filetype=css
+	autocmd BufRead,BufNewFile *.scss set filetype=css
 
 	autocmd Filetype css inoremap <leader>! <Space>!important;
 	autocmd Filetype css inoremap <leader>{ <Space>{<Enter>}<Enter><++><Esc>2ko
@@ -192,7 +256,7 @@ set viminfo+=n~/.vim/.viminfo
 "MARKDOWN
 	autocmd Filetype markdown,rmd map <leader>w yiWi[<esc>Ea](<esc>pa)
 	autocmd Filetype markdown,rmd inoremap ;, <- c(<++>)<Esc>I
-	autocmd Filetype markdown,rmd inoremap ;n ---<Enter>title: "<++>"<Enter>bibliography:<Space>/home/raitaro/Documents/LaTeX/energ.bib<Enter>csl:<Space>/home/raitaro/Documents/LaTeX/bit-numerical-mathematics.csl<Enter>output:<Enter><Space><Space>pdf_document:<Enter><Space><Space>fig_caption: yes<Enter>number_sections: yes<Enter><esc>I---<Enter>\renewcommand{\figurename}{Fig.}<Enter>\renewcommand\contentsname{Cuprins}<Enter>\renewcommand{\tablename}{Tabel}<Enter>
+	autocmd Filetype markdown,rmd inoremap ;n ---<Enter>bibliography:<Space>/home/raitaro/Documents/LaTeX/energ.bib<Enter>biblio-style: unsrt><Enter>output:<Enter><Space><Space>pdf_document:<Enter><Space><Space>fig_caption: yes<Enter>number_sections: yes<Enter>citation-package: natbib<Enter><esc>I---<Enter>\renewcommand{\figurename}{Fig.}<Enter>\renewcommand\contentsname{Cuprins}<Enter>\renewcommand{\tablename}{Tabel}<Enter>
 	autocmd Filetype markdown,rmd inoremap ;b ****<Space><Esc>F*hi
 	autocmd Filetype markdown,rmd inoremap ;s ~~~~<Space><Esc>F~hi
 	autocmd Filetype markdown,rmd inoremap ;e **<Esc>F*i
@@ -206,7 +270,7 @@ set viminfo+=n~/.vim/.viminfo
 	autocmd Filetype markdown,rmd inoremap ;2 ##<Space><Enter><Esc>kA
 	autocmd Filetype markdown,rmd inoremap ;3 ###<Space><Enter><Esc>kA
 	autocmd Filetype markdown,rmd inoremap ;a --------<Enter>
-	autocmd Filetype markdown,rmd inoremap ;eq \begin{equation}<Enter><Enter>(\#eq:<++>)<Enter>\end{equation}<Enter><++><esc>3ki
+	autocmd Filetype markdown,rmd inoremap ;eq \begin{equation}<Enter><Enter>\end{equation}<Enter><++><esc>2ki
 	autocmd Filetype markdown,rmd inoremap ;ref \@ref(eq:)<esc>i
 	autocmd Filetype rmd inoremap ;r <esc>0y$A<Space><-<Space>round(<esc>pA,3)<esc>o
 	autocmd Filetype rmd inoremap ;R ```{r, echo=FALSE}<Enter><Enter>```<esc>kI
@@ -227,178 +291,188 @@ set viminfo+=n~/.vim/.viminfo
 
 	autocmd FileType tx inoremap ;bf \textbf{}<++><Esc>T{i
 
-" Open my bibliography file in split
-	map <F10> :tabnew<space>~/Documents/LaTeX/energ.bib<CR>
+" }}}
 
-" vimrc
-	map <F6> :source ~/.vimrc
-	map <F7> :tabnew<space>~/.vimrc<CR>
+" Config files opening {{{
+	" Open my bibliography file in split
+		map <F10> :tabnew<space>~/Documents/LaTeX/energ.bib<CR>
 
-" zshrc
-	map <F8> :tabnew<space>~/.zshrc<CR>
+	" vimrc
+		map <F6> :source ~/.vimrc
+		map <F7> :tabnew<space>~/.vimrc<CR>
 
-" Plugins will be downloaded under the specified directory.
-  " execute pathogen#infect()
+	" zshrc
+		map <F8> :tabnew<space>~/.zshrc<CR>
+" }}}
+
+" Plugins {{{
 	call plug#begin('~/.vim/plugged')
-
-" Declare the list of plugins.
-	Plug 'scrooloose/nerdcommenter'
-	Plug 'ntpeters/vim-better-whitespace'
-	Plug 'Badacadabra/vim-archery'
-  Plug 'vim-airline/vim-airline'
-	" Plugin outside ~/.vim/plugged with post-update hook
-	Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-	" Plug 'iamcco/mathjax-support-for-mkdp'
-	" Plug 'iamcco/markdown-preview.vim'
-" List ends here. Plugins become visible to Vim after this call.
+	" Declare the list of plugins.
+		Plug 'scrooloose/nerdcommenter'
+		Plug 'ntpeters/vim-better-whitespace'
+		Plug 'Badacadabra/vim-archery'
+		Plug 'morhetz/gruvbox'
+		Plug 'joshdick/onedark.vim'
+		Plug 'vim-airline/vim-airline'
+		Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+		Plug 'scrooloose/nerdtree'
+		" Plug 'tpope/vim-surround'
+		Plug 'jiangmiao/auto-pairs'
+		Plug 'terryma/vim-multiple-cursors'
+		Plug 'easymotion/vim-easymotion'
+		Plug 'gko/vim-coloresque'
+		Plug 'kien/ctrlp.vim'
+		" Plug 'jbgutierrez/vim-better-comments'
+		" Plug 'cakebaker/scss-syntax.vim'
+		" if has('nvim')
+			" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+		" else
+			" Plug 'Shougo/deoplete.nvim'
+			" Plug 'roxma/nvim-yarp'
+			" Plug 'roxma/vim-hug-neovim-rpc'
+		" endif
+	" List ends here. Plugins become visible to Vim after this call.
 	call plug#end()
 	filetype indent on
 	let mapleader=" "
 	" set timeout timeoutlen=1500
 
-" Markdown preview stuff
-	" let g:mkdp_browserfunc = 'MKDP_browserfunc_default'
-	" " callback vim function to open browser, the only param is the url to open
-	" let g:mkdp_auto_start = 0
-	" " set to 1, the vim will open the preview window once enter the markdown
-	" " buffer
-	" let g:mkdp_auto_open = 0
-	" " set to 1, the vim will auto open preview window when you edit the
-	" " markdown file
-	" let g:mkdp_auto_close = 1
-	" " set to 1, the vim will auto close current preview window when change
-	" " from markdown buffer to another buffer
-	" let g:mkdp_refresh_slow = 0
-	" " set to 1, the vim will just refresh markdown when save the buffer or
-	" " leave from insert mode, default 0 is auto refresh markdown as you edit or
-	" " move the cursor
-	" let g:mkdp_command_for_global = 0
-	" " set to 1, the MarkdownPreview command can be use for all files,
-	" " by default it just can be use in markdown file
-	" let g:mkdp_open_to_the_world = 0
-	" " set to 1, preview server available to others in your network
-	" " by default, the server only listens on localhost (127.0.0.1)
-	" nmap <silent> <F8> <Plug>MarkdownPreview
-	" imap <silent> <F8> <Plug>MarkdownPreview
-	" nmap <silent> <F9> <Plug>StopMarkdownPreview
-	" imap <silent> <F9> <Plug>StopMarkdownPreview
-" Airline stuff
-	let g:airline_theme = 'archery'
-	let g:airline#extensions#tabline#enabled = 1
+	" Airline stuff {{{
+		" let g:airline_theme = 'archery'
+		" let g:airline_theme = 'gruvbox'
+		let g:airline#extensions#tabline#enabled = 1
+		" let g:airline#extensions#tabline#left_sep = '>'
+		" let g:airline#extensions#tabline#left_alt_sep = '>'
 
-" Add spaces after comment delimiters by default
-	let g:NERDSpaceDelims = 1
+		" air-line
+		let g:airline_powerline_fonts = 1
+		if !exists('g:airline_symbols')
+			let g:airline_symbols = {}
+		endif
+		" unicode symbols
+		let g:airline_symbols.paste = 'ρ'
+		let g:airline_symbols.whitespace = 'Ξ'
+		" airline symbols
+		let g:airline_left_sep = ''
+		let g:airline_left_alt_sep = ''
+		let g:airline_right_sep = ''
+		let g:airline_right_alt_sep = ''
+		let g:airline_symbols.branch = ''
+		let g:airline_symbols.readonly = ''
+		let g:airline_symbols.linenr = ''
+	" }}}
 
-" Enable trimming of trailing whitespace when uncommenting
-	let g:NERDTrimTrailingWhitespace = 1
+	" Nerd commenter {{{
+		" Add spaces after comment delimiters by default
+			let g:NERDSpaceDelims = 1
 
-" Custom comments
-	let g:NERDCustomDelimiters = {
-	\ 'c': { 'left': '/**','right': '*/' },
-	\ 'rmd': { 'left': '%'} ,
-	\ 'tex': { 'left': '<!--','right': '-->' }
-	\ }
+		" Enable trimming of trailing whitespace when uncommenting
+			let g:NERDTrimTrailingWhitespace = 1
 
-"Allow commenting and inverting empty lines (useful when commenting a region)
-	let g:NERDCommentEmptyLines = 1
+		" Custom comments
+			let g:NERDCustomDelimiters = {
+			\ 'c': { 'left': '/**','right': '*/' },
+			\ 'tex': { 'left': '<!--','right': '-->' },
+			\ 'rmd': { 'left': '<!--','right': '-->' }
+			\ }
 
-" Strip the newline from the end of a string
-function! Chomp(str)
-	return substitute(a:str, '\n$', '', '')
-endfunction
+		" Allow commenting and inverting empty lines (useful when commenting a region)
+			let g:NERDCommentEmptyLines = 1
+	" }}}
 
-" Find a file and pass it to cmd
-function! DmenuOpen(cmd)
-	let fname = Chomp(system('find . -path ./.gnupg -prune -o -print | dmenu -i -fn hack-16 -nb "#232629" -nf "#eff0f1" -sb "#31363b" -sf "#3daee9" -l 20 -p ' . a:cmd))
+	" Nerd tree {{{
+		map <C-t> :NERDTreeToggle<CR>
+		let g:NERDTreeDirArrowExpandable = '▸'
+		let g:NERDTreeDirArrowCollapsible = '▾'
 
-	if empty(fname)
-		return
-	endif
-	execute a:cmd . " " . fname
-endfunction
+		" Strip the newline from the end of a string
+		function! Chomp(str)
+			return substitute(a:str, '\n$', '', '')
+		endfunction
+	" }}}
 
-map <c-t> :call DmenuOpen(":tabnew")<cr>
-map <c-e> :call DmenuOpen("e")<cr>
-map <c-f> :call DmenuOpen(":vsp")<cr>
+	" Neocomplete {{{
+		" Disable AutoComplPop.
+		let g:acp_enableAtStartup = 0
+		" Use neocomplete.
+		let g:neocomplete#enable_at_startup = 1
+		" Use smartcase.
+		let g:neocomplete#enable_smart_case = 1
+		" Set minimum syntax keyword length.
+		let g:neocomplete#sources#syntax#min_keyword_length = 3
 
-"Note: This option must be set in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-	\ 'default' : $HOME.'/.vim/.vimshell_hist',
-	\ 'vimshell' : $HOME.'/.vimshell_hist',
-	\ 'scheme' : $HOME.'/.gosh_completions'
+		" Define dictionary.
+		let g:neocomplete#sources#dictionary#dictionaries = {
+			\ 'default' : $HOME.'/.vim/.vimshell_hist',
+			\ 'vimshell' : $HOME.'/.vimshell_hist',
+			\ 'scheme' : $HOME.'/.gosh_completions'
 		\ }
 
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-	let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+		" Define keyword.
+		if !exists('g:neocomplete#keyword_patterns')
+			let g:neocomplete#keyword_patterns = {}
+		endif
+		let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
+		" Plugin key-mappings.
+		inoremap <expr><C-g>     neocomplete#undo_completion()
+		inoremap <expr><C-l>     neocomplete#complete_common_string()
 
-" Recommended key-mappings for autocompletion
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-	" For no inserting <CR> key.
-	"return pumvisible() ? "\<C-y>" : "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+		" Recommended key-mappings for autocompletion
+		" <CR>: close popup and save indent.
+		inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+		function! s:my_cr_function()
+		return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+			" For no inserting <CR> key.
+			"return pumvisible() ? "\<C-y>" : "\<CR>"
+		endfunction
+		" <TAB>: completion.
+		inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+		" <C-h>, <BS>: close popup and delete backword char.
+		inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+		inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+		" Close popup by <Space>.
+		"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
 
-" AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
+		" AutoComplPop like behavior.
+		"let g:neocomplete#enable_auto_select = 1
 
-" Shell like behavior(not recommended).
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+		" Shell like behavior(not recommended).
+		"set completeopt+=longest
+		"let g:neocomplete#enable_auto_select = 1
+		"let g:neocomplete#disable_auto_complete = 1
+		"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
 
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+		" Enable omni completion.
+		autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+		autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+		autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+		autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+		autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-	let g:neocomplete#sources#omni#input_patterns = {}
-endif
-"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+		" Enable heavy omni completion.
+		if !exists('g:neocomplete#sources#omni#input_patterns')
+			let g:neocomplete#sources#omni#input_patterns = {}
+		endif
+		"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+		"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+		"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
-" For perlomni.vim setting.
-" https://github.com/c9s/perlomni.vim
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+		" For perlomni.vim setting.
+		" https://github.com/c9s/perlomni.vim
+		let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+	" }}}
 
-" Toggle DeadKeys set (for accent marks):
-	so ~/.vim/plugin/deadkeys.vim
-	nm <leader>dd :call ToggleDeadKeys()<CR>
-	imap <leader>dd <esc>:call ToggleDeadKeys()<CR>a
+" }}}
 
-" Source my IPA shorcuts:
-	so ~/.vim/plugin/ipa.vim
-	nm <leader>ii :call ToggleIPA()<CR>
-		imap <leader>ii <esc>:call ToggleIPA()<CR>a
+" Special characters functions {{{
+	" Toggle DeadKeys set (for accent marks):
+		so ~/.vim/plugin/deadkeys.vim
+		nm <leader>dd :call ToggleDeadKeys()<CR>
+		imap <leader>dd <esc>:call ToggleDeadKeys()<CR>a
 
+	" Source my IPA shorcuts:
+		so ~/.vim/plugin/ipa.vim
+		nm <leader>ii :call ToggleIPA()<CR>
+			imap <leader>ii <esc>:call ToggleIPA()<CR>a
+" }}}
