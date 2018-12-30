@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This will set the file image in the corner as a badge. Inspired by the gnome addon
+# qiv takes somewhat less RAM. It repositions on click event.
+# pqiv also works with gifs. Use -s for slideshow if you want.
+
+file=
+# qiv -p $file -w 150 &
+pqiv -c -i $file -P 1790,909 -z .35 &
+sleep 1s
+wmctrl -i -r "$(wmctrl -l | grep "qiv" | tail -1 | cut -f1 -d" ")" -t -2 -b add,above,skip_taskbar
