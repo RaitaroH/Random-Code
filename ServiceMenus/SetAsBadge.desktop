@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=image/jpeg;image/png;image/gif;
+Actions=SetAsBadge;
+X-KDE-Priority=TopLevel
+X-KDE-StartupNotify=false
+
+[Desktop Action SetAsBadge]
+Icon=view-list-icons
+Name=Set as corner badge
+Exec=corner '%u' .5
