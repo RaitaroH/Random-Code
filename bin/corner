@@ -6,11 +6,12 @@
 
 if [[ $1 = "" ]]; then
 	file=~/Pictures/bla.png
+	# How big the image should be
+	zoom=0.35
 else
 	file=$1
+	zoom=$2
 fi
-# How big the image should be
-zoom=0.35
 
 screen_width="$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $3}')"
 screen_height="$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $4}')"
