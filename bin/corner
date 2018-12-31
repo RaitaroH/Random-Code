@@ -4,7 +4,11 @@
 # qiv takes somewhat less RAM. It repositions on click event.
 # pqiv also works with gifs. Use -s for slideshow if you want.
 
-file=~/Pictures/bla.png
+if [[ $1 = "" ]]; then
+	file=~/Pictures/bla.png
+else
+	file=$1
+fi
 # How big the image should be
 zoom=0.35
 
