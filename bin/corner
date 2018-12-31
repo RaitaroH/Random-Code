@@ -4,11 +4,23 @@
 # qiv takes somewhat less RAM. It repositions on click event.
 # pqiv also works with gifs. Use -s for slideshow if you want.
 
-file=
-# qiv -p $file -w 150 &
+file=~/Pictures/bla.png
+# How big the image should be
+zoom=0.35
+
+screen_width="$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $3}')"
+screen_height="$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $4}')"
+image_width=`identify -format '%w' "$file"`
+image_height=`identify -format '%h' "$file"`
+# Placement in the right corner
+x_position=`echo "$screen_width - $image_width*$zoom" | bc | awk '{printf("%d\n",$1 + 0.5)}'`
+y_position=`echo "$screen_height - $image_height*$zoom" | bc | awk '{printf("%d\n",$1 + 0.5)}'`
+
 # Kill if it exists
 if pgrep pqiv > /dev/null 2>&1; then pkill pqivi; fi
-pqiv -c -i $file -P 1790,909 -z .35 &
+# Start pqiv
+pqiv -c -i $file -P $x_position,$y_position -z $zoom > /dev/null 2>&1 &
+# Other positions (change in pqiv -P): 0,0 top left, x,0 top right, 0,y bottom left
 sleep 1s
 # Make the badge show on all desktops
 wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -t -2 &
