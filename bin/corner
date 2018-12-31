@@ -14,13 +14,15 @@ else
 fi
 
 # Info needed for image placement. Default right corner
-screen_width="$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $3}')"
-screen_height="$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $4}')"
+screen_width=`xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $3}'`
+screen_height=`xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $4}'`
 # image_width=`identify -format '%w' "$file"`
 # image_height=`identify -format '%h' "$file"`
 # In case you want a gif use these 2 instead
 image_width=`convert "$file[0]" -ping -format "%w" info:`
 image_height=`convert "$file[0]" -ping -format "%h" info:`
+
+# Placement in the right corner
 x_position=`echo "$screen_width - $image_width*$zoom" | bc | awk '{printf("%d\n",$1 + 0.5)}'`
 y_position=`echo "$screen_height - $image_height*$zoom" | bc | awk '{printf("%d\n",$1 + 0.5)}'`
 
