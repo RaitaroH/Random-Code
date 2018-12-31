@@ -17,7 +17,7 @@ x_position=`echo "$screen_width - $image_width*$zoom" | bc | awk '{printf("%d\n"
 y_position=`echo "$screen_height - $image_height*$zoom" | bc | awk '{printf("%d\n",$1 + 0.5)}'`
 
 # Kill if it exists
-if pgrep pqiv > /dev/null 2>&1; then pkill pqivi; fi
+if pgrep pqiv > /dev/null 2>&1; then pkill pqiv; fi
 # Start pqiv
 pqiv -c -i $file -P $x_position,$y_position -z $zoom > /dev/null 2>&1 &
 # Other positions (change in pqiv -P): 0,0 top left, x,0 top right, 0,y bottom left
