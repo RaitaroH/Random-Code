@@ -1,0 +1,167 @@
+#                     /$$       /$$             /$$
+#                    | $$      | $$            | $$
+#  /$$$$$$$ /$$   /$$| $$$$$$$ | $$   /$$  /$$$$$$$
+# /$$_____/|  $$ /$$/| $$__  $$| $$  /$$/ /$$__  $$
+#|  $$$$$$  \  $$$$/ | $$  \ $$| $$$$$$/ | $$  | $$
+# \____  $$  >$$  $$ | $$  | $$| $$_  $$ | $$  | $$
+# /$$$$$$$/ /$$/\  $$| $$  | $$| $$ \  $$|  $$$$$$$
+#|_______/ |__/  \__/|__/  |__/|__/  \__/ \_______/
+
+# Replacing the default keyboard daemon in Plasma
+# Every command you don't know is most likely a script of mine
+# One could replace qdbus with a var exported before running sxhkd
+
+# Open stuff layer
+super + o ; {v, r, c, f, k, t, y, b, m, w, v}
+	{terminator -e "vim",\
+	~/bin/Rcalc,\
+	terminator -e "calcurse",\
+	terminator -e "~/.config/vifm/scripts/vifmrun",\
+	ksysguard,\
+	~/bin/turl,\
+	~/bin/ytmail,\
+	dolphin ~/bin,\
+	dolphin /media/raitaro/HDD/Muzica/Anime/OST/,\
+	dolphin /home/raitaro/Pictures/Wallpapers/,\
+	dolphin ~/Videos}
+
+
+# Terminal emulator
+super + Return
+	terminator
+ctrl + alt + t
+	terminator
+# ksysguard duplicate
+ctrl + alt + Escape
+	ksysguard
+
+
+# Reload stuff
+super + shift + Escape
+	killall plasmashell && kstart5 plasmashell > /dev/null 2>&1 &
+super + Escape
+	pkill -USR1 -x sxhkd && notify-send "[sxhkd] reloaded"
+
+
+# Music
+ctrl + alt + {a,s,d,f,q}
+	{audacious --qt -t,\
+	qMusic PlayPause,\
+	qMusic Next,\
+	qMusic Previous,\
+	killall audacious}
+
+
+# Conky
+ctrl + alt + {c,shift+c}
+	{conkySwitch, killall conky}
+
+
+# Wallpapers
+ctrl + alt + w ; {w,d,f,e}
+	{WallpaperSwicher --most-used,\
+	WallpaperSwicher -n,\
+	WallpaperSwicher -p,\
+	WallpaperSwicher -e}
+
+
+# Screenshots
+super + ctrl + s ; {s,r,f,a}
+	{maim -su | xclip -selection clipboard -t image/png,\
+	spectacle -r,\
+	spectacle -f,\
+	spectacle -a}
+
+
+# Rofi stuff
+super + @space ; {space,r,m,shift+m,w,shift+w,o,e,shift+e,c,l,k,p,i}
+	{qdbus org.kde.kglobalaccel /component/krunner org.kde.kglobalaccel.Component.invokeShortcut 'run command',\
+	rofi -show run theme blue,\
+	dMusic -d,\
+	dMusic -f,\
+	WallpaperSwicher --dmenu,\
+	WallpaperSwicher --dmenu c,\
+	dOpen,\
+	dMoji -p,\
+	dMoji -e,\
+	dCheat,\
+	dLinks,\
+	dKill,\
+	keepmenu,\
+	dInk}
+
+
+# Kwin shortcuts{{{
+
+# Closing windows
+alt + x
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Close'
+super + x
+	xkill
+
+# Zoom
+alt + {z, c}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'view_zoom_in',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'view_zoom_out'}
+# Duplicate of zoom. Used with easystroke
+super + {equal, minus}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'view_zoom_in',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'view_zoom_out'}
+
+# Virtual desktops
+alt + {s, w, shift+s, shift+w}
+	{qdbus org.kde.KWin /KWin org.kde.KWin.nextDesktop,\
+	 qdbus org.kde.KWin /KWin org.kde.KWin.previousDesktop,\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window to Next Desktop',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window to Previous Desktop'}
+
+# Tiling
+super + {s, z, c}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Bottom',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Bottom Left',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Bottom Right'}
+super + {w, q, e}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Top',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Top Left',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Top Right'}
+super + {a, d}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Left',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Quick Tile Right'}
+
+# Window position
+super + shift + {w, h, v}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Maximize',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Maximize Horizontal',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Maximize Vertical'}
+super + shift + {s, d}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Minimize',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'MinimizeAll'}
+super + shift + {a, b}
+	{qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Above Other Windows',\
+	 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window Below Other Windows'}
+
+# Kwin scripts
+# For some reason TIL3R in the above format gives an error in bash.
+super + f ; a
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: left third, full height'
+super + f ; shift + a
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: left two thirds, full height'
+super + f ; z
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: left third, lower half'
+super + f ; q
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: left third, upper half'
+super + f ; s
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: middle third, full height'
+super + f ; x
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: middle third, lower half'
+super + f ; w
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: middle third, upper half'
+super + f ; d
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL0R: right third, full height'
+super + f ; shift + d
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: right two thirds, full height'
+super + f ; c
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: right third, lower half'
+super + f ; e
+	qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'TIL3R: right third, upper half'
+# }}}
