@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This will set the file image in the corner as a badge. Inspired by the gnome addon
 # qiv takes somewhat less RAM. It repositions on click event.
@@ -29,10 +29,11 @@ y_position=`echo "$screen_height - $image_height*$zoom" | bc | awk '{printf("%d\
 # Kill if it exists
 if pgrep pqiv > /dev/null 2>&1; then pkill pqiv; fi
 # Start pqiv
-pqiv -c -i "$file" -P $x_position,$y_position -z $zoom > /dev/null 2>&1 &
+pqiv -cif --click-through --keep-above "$file" -P $x_position,$y_position -z $zoom & #> /dev/null 2>&1 &
+# pqiv -cif "$file" -P $x_position,$y_position -z $zoom > /dev/null 2>&1 &
 # Other positions (change in pqiv -P): 0,0 top left, x,0 top right, 0,y bottom left
 sleep 1s
 # Make the badge show on all desktops
 wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -t -2 &
 # Make the badge be over everything
-wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -b add,above,skip_taskbar &
+wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -b add,above,skip_taskbar,skip_pager &
