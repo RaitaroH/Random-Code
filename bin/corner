@@ -36,4 +36,5 @@ sleep 1s
 # Make the badge show on all desktops
 wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -t -2 &
 # Make the badge be over everything
-wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -b add,above,skip_taskbar,skip_pager &
+wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -b add,above &
+wmctrl -i -r "$(wmctrl -l | grep "pqiv" | tail -1 | cut -f1 -d" ")" -b add,skip_pager,skip_taskbar &
